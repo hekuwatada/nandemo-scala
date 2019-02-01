@@ -4,10 +4,8 @@ import java.util.Properties
 
 import org.apache.kafka.clients.producer.{Callback, ProducerRecord, RecordMetadata, KafkaProducer => JavaKafkaProducer, Producer => JavaProducer}
 
-import scala.collection.JavaConverters._
 import scala.concurrent.{Future, Promise}
 import scala.util.Success
-
 
 trait KafkaProducerLike[K, V] {
   def send(record: ProducerRecord[K, V]): Future[RecordMetadata]
