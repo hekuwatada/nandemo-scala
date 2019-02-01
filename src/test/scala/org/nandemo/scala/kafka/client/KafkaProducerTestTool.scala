@@ -9,7 +9,7 @@ import scala.concurrent.{Await, ExecutionContext}
   To read message:
   ./kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic t1 --from-beginning
  */
-object TestKafkaWrite extends App {
+object KafkaProducerTestTool extends App {
   val producer = KafkaProducer[String, String](LocalKafkaConf())
 
   val message = s"test-${UUID.randomUUID().toString}"
