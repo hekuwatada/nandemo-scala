@@ -5,15 +5,9 @@ import java.util.{Properties, UUID}
 import org.apache.kafka.clients.producer.{ProducerConfig, RecordMetadata}
 import org.nandemo.scala.kafka.{LocalKafkaConf, LocalKafkaTestUtil}
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{BeforeAndAfterAll, FunSpec, Matchers}
+import org.scalatest.{FunSpec, Matchers}
 
-class KafkaProducerSpec extends FunSpec with Matchers with BeforeAndAfterAll with ScalaFutures {
-
-  lazy val producer = KafkaProducer[String, String](LocalKafkaConf())
-
-  override def afterAll() = {
-    producer.close()
-  }
+class KafkaProducerSpec extends FunSpec with Matchers with ScalaFutures {
 
   def withKafkaProducer[K, V](producerProps: Properties, testBlock: KafkaProducer[K, V] => Any): Unit = {
     lazy val producer = KafkaProducer[K, V](producerProps)
