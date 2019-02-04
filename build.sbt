@@ -21,7 +21,3 @@ val testLibs = Seq(
 )
 
 libraryDependencies ++= prodLibs ++ testLibs
-
-
-
-

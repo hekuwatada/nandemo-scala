@@ -2,6 +2,8 @@ package org.nandemo.scala.kafka.client
 
 import java.util.UUID
 
+import org.nandemo.scala.kafka.{LocalKafkaConf, LocalKafkaTestUtil}
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext}
 

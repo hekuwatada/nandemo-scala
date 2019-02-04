@@ -9,7 +9,7 @@ import akka.stream.scaladsl.Source
 import com.typesafe.config.ConfigFactory
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.nandemo.scala.kafka.client.LocalKafkaConf
+import org.nandemo.scala.kafka.LocalKafkaConf
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
