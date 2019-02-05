@@ -17,7 +17,8 @@ val testLibs = Seq(
   "org.scalactic" %% "scalactic" % "3.0.5",
   "org.scalatest" %% "scalatest" % "3.0.5" % Test,
   "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.20" % Test,
-  "com.typesafe.akka" %% "akka-testkit" % "2.5.20" % Test
+  "com.typesafe.akka" %% "akka-testkit" % "2.5.20" % Test,
+  "org.mockito" % "mockito-core" % "2.23.4" % Test
 )
 
 libraryDependencies ++= prodLibs ++ testLibs

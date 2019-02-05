@@ -18,7 +18,11 @@ trait KafkaProducerLike[K, V] {
 class KafkaProducer[K, V](val producer: JavaProducer[K, V]) extends KafkaProducerLike[K, V] {
   override def send(record: ProducerRecord[K, V]): Future[RecordMetadata] = {
     val promise = Promise[RecordMetadata]()
-    producer.send(record, ProducerCallback(promise))
+    try {
+      producer.send(record, ProducerCallback(promise))
+    } catch { case e: Throwable =>
+      promise.failure(e)
+    }
     promise.future
   }
 
