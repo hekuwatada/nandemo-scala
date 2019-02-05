@@ -7,7 +7,7 @@ import org.nandemo.scala.kafka.{LocalKafkaConf, LocalKafkaTestUtil}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FunSpec, Matchers}
 
-class KafkaProducerSpec extends FunSpec with Matchers with ScalaFutures {
+class KafkaProducerIntegrationSpec extends FunSpec with Matchers with ScalaFutures {
 
   def withKafkaProducer[K, V](producerProps: Properties, testBlock: KafkaProducer[K, V] => Any): Unit = {
     lazy val producer = KafkaProducer[K, V](producerProps)
