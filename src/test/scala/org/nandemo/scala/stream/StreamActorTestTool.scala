@@ -4,11 +4,12 @@ import java.util.UUID
 
 import akka.Done
 import akka.actor.{ActorSystem, Props}
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Sink, Source}
+import akka.stream.{ActorMaterializer, OverflowStrategy}
+import akka.stream.scaladsl.{Sink, Source, SourceQueueWithComplete}
 import akka.util.Timeout
-import org.nandemo.scala.stream.ReadActor
+import org.nandemo.scala.stream.{ReadActor, WriteActor}
 import org.nandemo.scala.stream.message.TestMessage
+import akka.pattern.ask
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -28,6 +29,17 @@ object StreamToActor extends App {
 }
 
 object ActorToStream extends App {
-  //TODO
+
+  implicit val system = ActorSystem("actor-to-stream")
+  implicit val materializer = ActorMaterializer()
+
+  val queue: SourceQueueWithComplete[TestMessage] =
+    Source.queue[TestMessage](bufferSize = 1000, OverflowStrategy.backpressure)
+      .to(Sink.foreach(println)) //?
+      .run()
+
+  val writeActor = system.actorOf(Props(classOf[WriteActor], queue))
+
+  writeActor ! TestMessage(s"toactor-${UUID.randomUUID()}")
 }
 
