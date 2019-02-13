@@ -14,9 +14,10 @@ class StackActorSpec extends TestKit(ActorSystem("StackActorSpec")) with FunSpec
 
       actor ! SubscribeTransitionCallBack(monitor.ref)
 
+      monitor.expectMsg(CurrentState(actor, Idle))
+
       actor ! Push(1)
 
-      monitor.expectMsg(CurrentState(actor, Idle))
       monitor.expectMsg(Transition(actor, Idle, Active))
     }
   }
