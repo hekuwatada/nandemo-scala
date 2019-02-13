@@ -1,6 +1,6 @@
 package org.nandemo.scala.actor.fsm
 
-import akka.actor.FSM
+import akka.actor.{ActorRef, FSM}
 import org.nandemo.scala.actor.fsm.StackActor.StateData
 
 /**
@@ -19,9 +19,12 @@ object StackActor {
   final case class Push(value: Int) extends StackEvent
   case object Pop extends StackEvent
   case object Flush extends StackEvent
+
+  sealed trait StateChangeEvent[S, SD]
+  final case class StateChange[S, SD](oldState: S, newState: S, newStateData: SD) extends StateChangeEvent[S, SD]
 }
 
-class StackActor extends FSM[StackActor.State, StateData] {
+class StackActor(stateDataMonitor: ActorRef) extends FSM[StackActor.State, StateData] {
   import StackActor._
 
   startWith(Idle, Empty)
@@ -34,13 +37,18 @@ class StackActor extends FSM[StackActor.State, StateData] {
 
   when(Active) {
     case Event(Push(v: Int), stack: Stack) =>
-      stay using Stack(stack.values ++ Seq(v))
+      goto(Active) using Stack(stack.values ++ Seq(v))
     case Event(Pop, stack: Stack) if 1 < stack.values.size =>
-      stay using Stack(stack.values.tail)
+      goto(Active) using Stack(stack.values.tail)
     case Event(Pop, stack: Stack) if !(1 < stack.values.size) =>
       goto(Idle) using Empty
     case Event(Flush, _) =>
       goto(Idle) using Empty
+  }
+
+  onTransition {
+    case oldState -> nextState =>
+      stateDataMonitor ! StateChange(oldState, nextState, nextStateData)
   }
 
   whenUnhandled {
