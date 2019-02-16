@@ -10,7 +10,8 @@ val prodLibs = Seq(
   "org.apache.kafka" % "kafka-clients" % "2.1.0",
   "com.typesafe.akka" %% "akka-stream" % "2.5.20",
   "com.typesafe.akka" %% "akka-actor" % "2.5.20",
-  "com.typesafe.akka" %% "akka-stream-kafka" % "1.0-RC1"
+  "com.typesafe.akka" %% "akka-stream-kafka" % "1.0-RC1",
+  "com.softwaremill.quicklens" %% "quicklens" % "1.4.11"
 )
 
 val testLibs = Seq(
