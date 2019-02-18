@@ -14,12 +14,19 @@ val prodLibs = Seq(
   "com.softwaremill.quicklens" %% "quicklens" % "1.4.11"
 )
 
+val TestIntegrationTest = "test,it"
 val testLibs = Seq(
-  "org.scalactic" %% "scalactic" % "3.0.5",
-  "org.scalatest" %% "scalatest" % "3.0.5" % Test,
+  "org.scalactic" %% "scalactic" % "3.0.5" % TestIntegrationTest,
+  "org.scalatest" %% "scalatest" % "3.0.5" % TestIntegrationTest,
   "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.20" % Test,
   "com.typesafe.akka" %% "akka-testkit" % "2.5.20" % Test,
   "org.mockito" % "mockito-core" % "2.23.4" % Test
 )
 
-libraryDependencies ++= prodLibs ++ testLibs
+//@see https://www.scala-sbt.org/1.x/docs/Testing.html
+lazy val root = (project in file("."))
+  .configs(IntegrationTest)
+  .settings(
+    Defaults.itSettings,
+    libraryDependencies ++= prodLibs ++ testLibs
+  )
