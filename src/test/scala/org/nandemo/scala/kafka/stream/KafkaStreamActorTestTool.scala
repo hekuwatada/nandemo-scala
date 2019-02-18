@@ -9,7 +9,7 @@ import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import org.apache.kafka.clients.producer.ProducerRecord
-import org.nandemo.scala.kafka.stream.KafkaStream
+import org.nandemo.scala.kafka.stream.{KafkaStream, KafkaStringStream}
 import org.nandemo.scala.stream.message.TestMessage
 import org.nandemo.scala.stream.{ReadActor, WriteActor}
 
@@ -28,7 +28,7 @@ object KafkaStreamToActor extends App {
 
   val readActor = system.actorOf(Props[ReadActor])
 
-  val f: Future[Done] = KafkaStream.kafkaSource(topic, consumerGroupId)
+  val f: Future[Done] = KafkaStringStream.kafkaSource(topic, consumerGroupId)
     .map(r => TestMessage(r.value()))
     .ask[Done](parallelism = 2)(readActor)
     .runWith(Sink.ignore)
@@ -44,7 +44,7 @@ object ActorToKafkaStream extends App {
   val queue: SourceQueueWithComplete[TestMessage] =
     Source.queue[TestMessage](bufferSize = 1000, OverflowStrategy.backpressure)
       .map(m => new ProducerRecord[String, String](topic, "key", m.value))
-      .to(KafkaStream.kafkaSink())
+      .to(KafkaStringStream.kafkaSink())
       .run()
 
   val writeActor = system.actorOf(Props(classOf[WriteActor], queue))
