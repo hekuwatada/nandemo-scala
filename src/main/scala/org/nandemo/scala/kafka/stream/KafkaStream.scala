@@ -4,7 +4,7 @@ import akka.Done
 import akka.kafka.{ConsumerSettings, ProducerSettings, Subscriptions}
 import akka.kafka.scaladsl.{Consumer, Producer}
 import akka.stream.scaladsl.{Sink, Source}
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
@@ -12,8 +12,8 @@ import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializ
 import scala.concurrent.Future
 
 object KafkaStream {
-  def kafkaSource(topic: String, consumerGroupId: String): Source[ConsumerRecord[String, String], Consumer.Control] = {
-    val config = ConfigFactory.load()
+  def kafkaSource[K, V](topic: String, consumerGroupId: String)
+                       (implicit config: Config): Source[ConsumerRecord[String, String], Consumer.Control] = {
     val consumerSettings =
       ConsumerSettings(config.getConfig("akka.kafka.consumer"),
         new StringDeserializer,
@@ -23,8 +23,7 @@ object KafkaStream {
       Subscriptions.topics(topic))
   }
 
-  def kafkaSink(): Sink[ProducerRecord[String, String], Future[Done]] = {
-    val config = ConfigFactory.load()
+  def kafkaSink()(implicit config: Config): Sink[ProducerRecord[String, String], Future[Done]] = {
     val producerSettings =
       ProducerSettings(config.getConfig("akka.kafka.producer"),
         new StringSerializer,

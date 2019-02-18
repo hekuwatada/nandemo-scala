@@ -7,6 +7,7 @@ import akka.actor.{ActorSystem, Props}
 import akka.stream.scaladsl.{Sink, Source, SourceQueueWithComplete}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.util.Timeout
+import com.typesafe.config.ConfigFactory
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.nandemo.scala.kafka.stream.KafkaStream
 import org.nandemo.scala.stream.message.TestMessage
@@ -20,6 +21,7 @@ object KafkaStreamToActor extends App {
   val topic = "t1"
   val consumerGroupId = "group1"
 
+  implicit val config = ConfigFactory.load()
   implicit val system = ActorSystem("stream-to-actor")
   implicit val materializer = ActorMaterializer()
   implicit val askTimeout = Timeout(5 seconds)
@@ -35,6 +37,7 @@ object KafkaStreamToActor extends App {
 object ActorToKafkaStream extends App {
   val topic = "t1"
 
+  implicit val config = ConfigFactory.load()
   implicit val system = ActorSystem("actor-to-stream")
   implicit val materializer = ActorMaterializer()
 
