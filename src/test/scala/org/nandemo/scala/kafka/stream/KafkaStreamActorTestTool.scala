@@ -4,8 +4,8 @@ import java.util.UUID
 
 import akka.Done
 import akka.actor.{ActorSystem, Props}
-import akka.stream.scaladsl.{Sink, Source, SourceQueueWithComplete}
-import akka.stream.{ActorMaterializer, OverflowStrategy}
+import akka.stream.scaladsl.{Keep, RunnableGraph, Sink, Source, SourceQueueWithComplete}
+import akka.stream.{ActorMaterializer, KillSwitches, OverflowStrategy, UniqueKillSwitch}
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -41,14 +41,19 @@ object ActorToKafkaStream extends App {
   implicit val system = ActorSystem("actor-to-stream")
   implicit val materializer = ActorMaterializer()
 
-  val queue: SourceQueueWithComplete[TestMessage] =
+  //TODO: via vs viaMat
+  val runnable: RunnableGraph[(SourceQueueWithComplete[TestMessage], UniqueKillSwitch)] =
     Source.queue[TestMessage](bufferSize = 1000, OverflowStrategy.backpressure)
+      .viaMat(KillSwitches.single)(Keep.both)
       .map(m => new ProducerRecord[String, String](topic, "key", m.value))
       .to(KafkaStringStream.kafkaSink())
-      .run()
+
+  val (queue, killSwitch): (SourceQueueWithComplete[TestMessage], UniqueKillSwitch) = runnable.run()
 
   val writeActor = system.actorOf(Props(classOf[WriteActor], queue))
 
-  writeActor ! TestMessage(s"ktoactor-${UUID.randomUUID()}")
+  writeActor ! TestMessage(s"ktoa-${UUID.randomUUID()}")
+
+  //TODO: how to gracefully terminate actor
 }
 
