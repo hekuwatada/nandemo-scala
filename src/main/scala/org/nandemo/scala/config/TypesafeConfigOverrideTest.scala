@@ -1,6 +1,6 @@
 package org.nandemo.scala.config
 
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{ConfigFactory, ConfigRenderOptions}
 
 object TypesafeConfigOverrideTest extends App {
 
@@ -10,5 +10,9 @@ object TypesafeConfigOverrideTest extends App {
   //-Dtypesafe.config.override=jvmoption
   println(config.getString("typesafe.config.override"))
 
-  println(config.getConfig("typesafe"))
+  val prettyPrintConfigs: String = config.getConfig("typesafe")
+    .root()
+    .render(ConfigRenderOptions.concise())
+
+  println(prettyPrintConfigs)
 }
